@@ -11,11 +11,13 @@ Dotenv.config();
 // register
 export const addProduct = async (req, res) => {
     try {
-      const { name, description,originalPrice,price, brand, size, color, imageUrl, stock, category,discount,newArrivals,bestSales } = req.body;
+      const { name, description,originalPrice,price, brand, size, color, imageUrl, stock, category,discount,newArrivals,bestSales,status,gender } = req.body;
   
       // Validate the request body
       const mySchema = z.object({
         name: z.string(),
+        status: z.string(),
+        gender: z.string(),
         description: z.string(),
         price: z.number(),
         originalPrice: z.number(),
@@ -28,6 +30,8 @@ export const addProduct = async (req, res) => {
   
       let productSchema = mySchema.safeParse({
         name: name,
+        gender: gender,
+        status: status,
         description: description,
         originalPrice: originalPrice,
         price: price,
@@ -59,6 +63,8 @@ export const addProduct = async (req, res) => {
         discount: discount,
         newArrivals: newArrivals,
         bestSales: bestSales,
+        status: status,
+        gender: gender,
       })
   
       if (newProduct) {
@@ -78,7 +84,7 @@ export const addProduct = async (req, res) => {
 export const viewAllProduct = async (req,res)=>{
     try {
               
-        const Products = await Product.find().populate('category');
+        const Products = await Product.find().populate('category').populate('brand');
        
         if(Products){
             console.log(Products);
@@ -108,7 +114,7 @@ export const viewParticularProduct = async (req,res)=>{
               }
         const product = await Product.findOne({
             _id:prod_id
-        }).populate('category')
+        }).populate('category').populate('brand')
        
         if(product){
            
@@ -163,10 +169,12 @@ export const updateProduct = async (req,res)=>{
                 return res.status(400).send({ message: "Unable to get product id", status: "error" });
               
               }
-        const {name,description,price,originalPrice,brand,size,color,imageUrl,stock,category,discount,newArrivals,bestSales} = req.body;
+        const {name,description,price,originalPrice,brand,size,color,imageUrl,stock,category,discount,newArrivals,bestSales,gender,status} = req.body;
         
     const mySchema = z.object({
         name: z.string(),
+        status: z.string(),
+        gender: z.string(),
         description: z.string(),
         originalPrice: z.number(),
         price: z.number(),
@@ -179,6 +187,8 @@ export const updateProduct = async (req,res)=>{
     
     let productSchema =  mySchema.safeParse({
         name:name,
+        gender:gender,
+        status:status,
         description:description,
         originalPrice:originalPrice,
         price:price,
@@ -197,6 +207,8 @@ export const updateProduct = async (req,res)=>{
         
         const updateProd = await Product.findByIdAndUpdate(prod_id,{
             name:name,
+            status:status,
+            gender:gender,
             description:description,
             originalPrice:originalPrice,
             price:price,
@@ -209,7 +221,7 @@ export const updateProduct = async (req,res)=>{
             discount: discount,
             newArrivals: newArrivals,
             bestSales: bestSales
-        },{ new: true, runValidators: true }).populate('category')
+        },{ new: true, runValidators: true }).populate('category').populate('brand')
        
         if(updateProd){
             console.log(updateProd);

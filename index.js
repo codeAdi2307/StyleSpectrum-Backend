@@ -6,7 +6,11 @@ import userRouter from "./routes/user.route.js";
 import productRouter from "./routes/product.route.js";
 import categoryRouter from "./routes/category.route.js";
 import bannerRouter from "./routes/banner.route.js";
+import brandRouter from "./routes/brand.router.js";
+
+
 import apiRouter from "./api/router.js";
+
 
 import Dotenv  from "dotenv";
 import cors from "cors";
@@ -23,6 +27,7 @@ app.use("/api/user",userRouter)
 app.use("/api/prod",productRouter)
 app.use("/api/cat",categoryRouter)
 app.use("/api/bann",bannerRouter)
+app.use("/api/brand",brandRouter)
 
 // For Web Api
 app.use("/api",apiRouter)

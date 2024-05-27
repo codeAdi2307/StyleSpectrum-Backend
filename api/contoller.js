@@ -6,6 +6,7 @@ import Dotenv  from "dotenv";
 import Product from "../model/product.model.js"
 import Category from "../model/category.model.js";
 import Banner from "../model/banner.model.js";
+import Brand from "../model/brand.model.js";
 import { STATUS_ACTIVE,ROLE_USER,ROLE_ADMIN } from "../constants/constants.js";
 
 Dotenv.config();
@@ -80,6 +81,30 @@ export const viewAllCategory = async (req,res)=>{
         }else{
             
             res.send({ message: "Unable to get Categorys",status: "error"});
+        }
+    
+    
+    } catch (error) { 
+        console.log(error);
+        res.send({ message: "something went wrong"});
+        
+    }
+}
+
+// view all brands
+export const viewAllBrand = async (req,res)=>{
+    try {
+              
+        const Brands = await Brand.find()
+        const BrandsCond = await Brand.find().where({status:STATUS_ACTIVE})
+       
+        if(Brands){
+            console.log(Brands);
+            res.send({ message: "All Brands listed",brands:Brands,brandsCond:BrandsCond,status: "success" });
+    
+        }else{
+            
+            res.send({ message: "Unable to get Brands",status: "error"});
         }
     
     
