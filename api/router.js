@@ -1,6 +1,6 @@
 import Express  from "express";
 
-import { viewAllProduct,viewAllCategory,filterCategoryWise,viewParticularProduct,viewAllBanner,userSignUp,userSignIn,viewAllBrand } from "./contoller.js";
+import { viewAllProduct,viewAllCategory,filterCategoryWise,viewParticularProduct,viewAllBanner,userSignUp,userSignIn,cartDetails,viewAllCoupon} from "./contoller.js";
 import { adminJwtVerify } from "../middleware/jwtverify.middleware.js";
 
 
@@ -16,6 +16,8 @@ apiRouter.post("/signup",userSignUp)
 apiRouter.post("/signin",userSignIn)
 apiRouter.get("/brand",viewAllBrand)
 
+apiRouter.post("/cartdetails",cartDetails)
+apiRouter.get("/coupons",viewAllCoupon)
 
 
 

@@ -1,9 +1,8 @@
-import User from "../model/user.model.js";
 import Jwt  from "jsonwebtoken";
 import {z} from "zod";
 import Dotenv  from "dotenv";
 import { ROLE_USER } from "../constants/constants.js";
-
+import User from "../model/user.model.js";
 
 
 Dotenv.config();
@@ -92,10 +91,6 @@ if(userSchema.success){
 }
 }
 
-
-
-
-
 export const userLogin = async (req,res)=>{
 
     const {email,password} = req.body;
@@ -119,4 +114,27 @@ export const userLogin = async (req,res)=>{
     }
     }
 
-    // update
+    export const viewAllUsers = async (req,res)=>{
+        try {
+                  
+            const Users = await User.find();
+           
+            if(Users){
+                console.log(Users);
+                res.send({ message: "All Users listed",users:Users,status: "success" });
+        
+            }else{
+                
+                res.send({ message: "Unable to get Users",status: "error"});
+            }
+        
+        
+        } catch (error) { 
+            console.log(error);
+            res.send({ message: "something went wrong"});
+            
+        }
+    }
+
+
+    

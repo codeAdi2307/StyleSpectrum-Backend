@@ -7,6 +7,7 @@ import productRouter from "./routes/product.route.js";
 import categoryRouter from "./routes/category.route.js";
 import bannerRouter from "./routes/banner.route.js";
 import brandRouter from "./routes/brand.router.js";
+import couponRouter from "./routes/coupon.route.js";
 
 
 import apiRouter from "./api/router.js";
@@ -28,6 +29,7 @@ app.use("/api/prod",productRouter)
 app.use("/api/cat",categoryRouter)
 app.use("/api/bann",bannerRouter)
 app.use("/api/brand",brandRouter)
+app.use("/api/cpn",couponRouter)
 
 // For Web Api
 app.use("/api",apiRouter)

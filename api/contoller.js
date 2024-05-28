@@ -7,7 +7,10 @@ import Product from "../model/product.model.js"
 import Category from "../model/category.model.js";
 import Banner from "../model/banner.model.js";
 import Brand from "../model/brand.model.js";
+import Cart from "../model/cart.model.js";
+import Coupon from "../model/coupon.model.js";
 import { STATUS_ACTIVE,ROLE_USER,ROLE_ADMIN } from "../constants/constants.js";
+
 
 Dotenv.config();
 
@@ -254,3 +257,87 @@ export const userSignIn = async (req,res,next)=>{
         
     }
     }
+// user cart details
+
+export const cartDetails = async (req, res) => {
+    try {
+      const { item, token } = req.body;
+      let user_data;
+  
+      if (token) {
+        try {
+          user_data = Jwt.verify(token, process.env.SECRET);
+        } catch (err) {
+          return res.status(401).send({ message: "Invalid token", status: "error" });
+        }
+  
+        if (!user_data) {
+          return res.status(401).send({ message: "Unable to get user details", status: "error" });
+        }
+      } else {
+        return res.status(400).send({ message: "Token not provided", status: "error" });
+      }
+  
+      let old_prod_cart = await Cart.findOne({ product: item._id, user: user_data._id });
+      let cartDetails;
+  
+      if (old_prod_cart) {
+        old_prod_cart.quantity = item.qty;
+        cartDetails = await old_prod_cart.save();
+        cartDetails = await Cart.findById(cartDetails._id).populate('product').populate('user');
+      } else {
+        cartDetails = await Cart.create({
+          product: item._id,
+          user: user_data._id,
+          quantity: item.qty,
+          price: item.price,
+          originalPrice: item.originalPrice
+        });
+  
+        cartDetails = await Cart.findById(cartDetails._id).populate('product').populate('user');
+      }
+  
+      if (cartDetails) {
+        return res.status(200).send({ message: "All cart details added", cart: cartDetails, status: "success" });
+      } else {
+        return res.status(500).send({ message: "Unable to add cart details", status: "error" });
+      }
+  
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ message: "Something went wrong", status: "error" });
+    }
+  };
+
+//   list of coupons
+export const viewAllCoupon = async (req, res) => {
+    try {
+        const CouponsData = await Coupon.find();
+
+        let Coupons = [];
+
+        const populatedCoupons = CouponsData.map(async (element) => {
+            if (element.category == null && element.user == null) {
+                return element;
+            } else if (element.category != null && element.user == null) {
+                return await element.populate('category');
+            } else if (element.category == null && element.user != null) {
+                return await element.populate('user');
+            } 
+        });
+
+        Coupons = await Promise.all(populatedCoupons);
+
+        if (Coupons.length > 0) {
+            console.log(Coupons);
+            res.send({ message: "All Coupons listed", coupons: Coupons, status: "success" });
+        } else {
+            res.send({ message: "Unable to get Coupons", status: "error" });
+        }
+    } catch (error) {
+        console.log(error);
+        res.send({ message: "something went wrong" });
+    }
+}
+
+  
