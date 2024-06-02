@@ -9,6 +9,7 @@ import Banner from "../model/banner.model.js";
 import Brand from "../model/brand.model.js";
 import Cart from "../model/cart.model.js";
 import Coupon from "../model/coupon.model.js";
+import Address from "../model/address.model.js";
 import { STATUS_ACTIVE,ROLE_USER,ROLE_ADMIN } from "../constants/constants.js";
 
 
@@ -19,11 +20,23 @@ Dotenv.config();
 export const viewAllProduct = async (req,res)=>{
     try {
               
-        const Products = await Product.find().populate('category');
+        const Products = await Product.find()
+        const populatePromises = Products.map(async (prod) => {
+            if (prod.category) {
+                await prod.populate('category');
+            }
+            if (prod.brand) {
+                await prod.populate('brand');
+            }
+            return prod;
+        });
+
+        const populatedProd = await Promise.all(populatePromises);
+
        
-        if(Products){
-            console.log(Products);
-            res.send({ message: "All products listed",Products:Products,status: "success" });
+        if(populatedProd){
+            console.log(populatedProd);
+            res.send({ message: "All products listed",Products:populatedProd,status: "success" });
     
         }else{
             
@@ -317,12 +330,15 @@ export const viewAllCoupon = async (req, res) => {
         let Coupons = [];
 
         const populatedCoupons = CouponsData.map(async (element) => {
-            if (element.category == null && element.user == null) {
+            if (element.category == null && element.user == null  && element.brand == null) {
                 return element;
-            } else if (element.category != null && element.user == null) {
+            } else if (element.category != null && element.user == null && element.brand == null) {
                 return await element.populate('category');
-            } else if (element.category == null && element.user != null) {
+            } else if (element.category == null && element.user != null&& element.brand == null) {
                 return await element.populate('user');
+            } 
+            else if (element.category == null && element.user == null&& element.brand != null) {
+                return await element.populate('brand');
             } 
         });
 
@@ -338,6 +354,102 @@ export const viewAllCoupon = async (req, res) => {
         console.log(error);
         res.send({ message: "something went wrong" });
     }
+
+
 }
+
+// add address
+export const addAddress = async (req, res, next) => {
+    try {
+      console.log("adasd");
+      const { type, name, street, city, state, postalCode, country, phonenumber } = req.body;
+      const user_data = req.user;
+  
+      const mySchema = z.object({
+        type: z.string(),
+        name: z.string(),
+        street: z.string(),
+        city: z.string(),
+        state: z.string(), 
+        postalCode: z.string(), 
+        phonenumber: z.string(), 
+        country: z.string(),
+      }).strict();
+  
+      const validationResult = mySchema.safeParse({
+        type: type,
+        name: name,
+        street: street,
+        city: city,
+        state: state,
+        postalCode: postalCode,
+        country: country,
+        phonenumber: phonenumber,
+      });
+
+      console.log("hdahdasd");
+      console.log(validationResult);
+  
+      if (!validationResult.success) {
+        const errors = validationResult.error.errors.map(err => err.message);
+        return res.status(400).json({ message: "Validation failed", errors: errors });
+      }
+  
+      const newAddress = await Address.create({
+        type: type,
+        name: name,
+        street: street,
+        city: city,
+        state: state,
+        postalCode: postalCode,
+        country: country,
+        phonenumber: phonenumber,
+        user: user_data
+      });
+  
+      console.log("ashdahd");
+      console.log(newAddress);
+  
+      if (newAddress) {
+        console.log("ajsdadddddddd");
+        console.log(newAddress);
+        res.status(201).json({ message: "Address Added Successfully", status: "success", address: newAddress });
+      } else {
+        res.status(500).json({ message: "Unable to add the address", status: "error" });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ message: "Something went wrong", status: "error" });
+    }
+  };
+
+//view all address
+export const viewAllAddress= async (req,res)=>{
+    try {
+        const user_data = req.user;
+
+        console.log("aduhasjdhja");
+        console.log(user_data._id);
+
+        const addresses = await Address.find().where({user : user_data._id}).populate('user');
+        
+
+        if(addresses){
+            console.log(addresses);
+            res.send({ message: "All address listed",address:addresses,status: "success" });
+    
+        }else{
+            
+            res.send({ message: "Unable to get addresses",status: "error"});
+        }
+    
+    
+    } catch (error) { 
+        console.log(error);
+        res.send({ message: "something went wrong"});
+        
+    }
+}
+  
 
   

@@ -43,9 +43,11 @@ const couponSchema = new Schema({
         required: false,
     },
     brand: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Brand',
         required: false,
     },
+
     coupontype: {
         type: String,
         required: true,

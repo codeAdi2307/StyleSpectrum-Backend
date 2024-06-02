@@ -8,6 +8,8 @@ import categoryRouter from "./routes/category.route.js";
 import bannerRouter from "./routes/banner.route.js";
 import brandRouter from "./routes/brand.router.js";
 import couponRouter from "./routes/coupon.route.js";
+import cashfreeRouter from "./routes/cashfree.route.js";
+import razorpayRouter from "./routes/razorpay.route.js";
 
 
 import apiRouter from "./api/router.js";
@@ -33,6 +35,10 @@ app.use("/api/cpn",couponRouter)
 
 // For Web Api
 app.use("/api",apiRouter)
+
+// for payment gateway
+app.use(cashfreeRouter)
+app.use(razorpayRouter)
 
 function connection() {
   try {

@@ -18,6 +18,7 @@ export const adminJwtVerify = async (req,res,next)=>{
           let check =  jwt.verify(auth,process.env.SECRET);
           console.log(check);
           if(check){
+            req.user = check;
             next();
           }else{
             console.log("unable to verify token");

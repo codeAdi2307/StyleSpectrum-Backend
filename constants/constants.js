@@ -12,3 +12,7 @@ export const MALE ="Male";
 export const FE_MALE ="Female";
 export const KIDS ="Kids";
 
+// Address Type
+export const HOME ="Home";
+export const OFFICE ="Office";
+

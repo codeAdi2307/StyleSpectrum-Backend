@@ -4,7 +4,16 @@ import categoryModel from "./category.model.js";
 const Schema = mongoose.Schema;
 
 const addressSchema = new Schema({
-    street: {
+
+      type: {
+        type: String,
+        required: true
+      },
+      name: {
+        type: String,
+        required: true
+      },
+      street: {
         type: String,
         required: true
       },
@@ -24,10 +33,7 @@ const addressSchema = new Schema({
         type: String,
         required: true
       },
-      status: {
-        type: String,
-        required: true
-      },
+
       phonenumber:{
         type:Number,
         require:true

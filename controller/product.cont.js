@@ -21,7 +21,7 @@ export const addProduct = async (req, res) => {
         description: z.string(),
         price: z.number(),
         originalPrice: z.number(),
-        brand: z.string(),
+      
         size: z.array(z.string()),
         color: z.array(z.string()),
         imageUrl: z.string(),
@@ -35,7 +35,7 @@ export const addProduct = async (req, res) => {
         description: description,
         originalPrice: originalPrice,
         price: price,
-        brand: brand,
+       
         size: size,
         color: color,
         imageUrl: imageUrl,
@@ -84,11 +84,25 @@ export const addProduct = async (req, res) => {
 export const viewAllProduct = async (req,res)=>{
     try {
               
-        const Products = await Product.find().populate('category').populate('brand');
+        const Products = await Product.find();
+
+        
+        const populatePromises = Products.map(async (prod) => {
+            if (prod.category) {
+                await prod.populate('category');
+            }
+            if (prod.brand) {
+                await prod.populate('brand');
+            }
+            return prod;
+        });
+
+        const populatedProd = await Promise.all(populatePromises);
+
        
-        if(Products){
-            console.log(Products);
-            res.send({ message: "All products listed",Products:Products,status: "success" });
+        if(populatedProd){
+            console.log(populatedProd);
+            res.send({ message: "All products listed",Products:populatedProd,status: "success" });
     
         }else{
             
@@ -178,7 +192,7 @@ export const updateProduct = async (req,res)=>{
         description: z.string(),
         originalPrice: z.number(),
         price: z.number(),
-        brand: z.string(),
+     
         size: z.string(),
         color: z.string(),
         imageUrl: z.string(),
@@ -192,7 +206,7 @@ export const updateProduct = async (req,res)=>{
         description:description,
         originalPrice:originalPrice,
         price:price,
-        brand:brand,
+       
         size:size,
         color:color,
         imageUrl:imageUrl,

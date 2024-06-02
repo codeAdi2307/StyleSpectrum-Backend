@@ -17,6 +17,7 @@ export const addCoupon = async (req, res) => {
 
         const sanitizedCategory = (Array.isArray(category) && category.length === 1 && category[0] === '') ? null : category;
         const sanitizedUser = (Array.isArray(user) && user.length === 1 && user[0] === '') ? null : user;
+        const sanitizedBrand = (Array.isArray(brand) && brand.length === 1 && brand[0] === '') ? null : brand;
 
         const newCoupon = await Coupon.create({
             name: name,
@@ -28,7 +29,7 @@ export const addCoupon = async (req, res) => {
             mincartvalue: mincartvalue,
             category: sanitizedCategory,
             user: sanitizedUser,
-            brand: brand,
+            brand: sanitizedBrand,
             coupontype: coupontype,
         });
 
@@ -49,7 +50,7 @@ export const addCoupon = async (req, res) => {
 export const viewAllCoupon = async (req,res)=>{
     try {
               
-        const Coupons = await Coupon.find().populate('category');
+        const Coupons = await Coupon.find().populate('category').populate('brand');
        
         if(Coupons){
             console.log(Coupons);
