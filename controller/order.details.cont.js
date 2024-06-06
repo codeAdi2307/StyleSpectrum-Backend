@@ -62,36 +62,38 @@ export const addOrderDetail = async (req, res) => {
     }
 }
 
-export const viewParticularOrder = async (req,res)=>{
-    try {
+export const viewParticularOrder = async (req, res) => {
+  try {
+      const order_id = req.params.id;
+      console.log(order_id);
 
-        const order_id = req.query.id;
-        console.log(order_id);
-              if(!order_id){
-                return res.status(400).send({ message: "Unable to get order id", status: "error" });
-              
-              }
+      if (!order_id) {
+          return res.status(400).send({ message: "Unable to get order id", status: "error" });
+      }
 
+      const orders = await OrderDetail.findOne({ _id: order_id })
+          .populate('user')
+          .populate('address')
+          .populate('product');
 
-    
-        const orders = await OrderDetail.findOne({
-            _id:order_id
-        }).populate('category').populate('brand').populate('coupon')
-       
-        if(orders){
-           
-            res.send({ message: "All orderss listed",item:orders,status: "success" });
-    
-        }else{
-            
-            res.status(404).send({ message: "orders not found", status: "error" });
-        }
-    
-    
-    } catch (error) { 
-        console.log(error);
-        res.status(500).send({ message: "Something went wrong", status: "error" });
-        
-    }
+      // Manually populate the coupon if it exists
+      if (orders && orders.coupon) {
+          await orders.populate('coupon').execPopulate();
+      }
+
+      if (orders) {
+          // If coupon is unavailable, set a default message
+          if (!orders.coupon) {
+              orders.coupon = { message: "Coupon unavailable" }; // Set to an object with a message or any other default value
+          }
+          res.send({ message: "Order details retrieved successfully", item: orders, status: "success" });
+      } else {
+          res.status(404).send({ message: "Order not found", status: "error" });
+      }
+
+  } catch (error) {
+      console.log(error);
+      res.status(500).send({ message: "Something went wrong", status: "error" });
+  }
 }
-  
+

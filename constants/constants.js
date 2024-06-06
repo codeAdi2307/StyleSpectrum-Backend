@@ -16,3 +16,10 @@ export const KIDS ="Kids";
 export const HOME ="Home";
 export const OFFICE ="Office";
 
+// payment status
+export const PAID ="paid";
+export const FAILED ="failed";
+export const PENDING ="pending";
+
+
+

@@ -10,7 +10,8 @@ import Brand from "../model/brand.model.js";
 import Cart from "../model/cart.model.js";
 import Coupon from "../model/coupon.model.js";
 import Address from "../model/address.model.js";
-import { STATUS_ACTIVE,ROLE_USER,ROLE_ADMIN } from "../constants/constants.js";
+import OrderDetail from "../model/order.details.model.js";
+import { STATUS_ACTIVE,ROLE_USER,ROLE_ADMIN,PENDING } from "../constants/constants.js";
 
 
 Dotenv.config();
@@ -450,6 +451,159 @@ export const viewAllAddress= async (req,res)=>{
         
     }
 }
+
+export const viewParticularAddress = async (req, res) => {
+    try {
+        const { aaddress } = req.body;
+        // console.log(req.body);
+        // console.log(aaddress);
+    
+        if (!aaddress) {
+            return res.status(400).send({ message: "Unable to get address id", status: "error" });
+        }
+
+        // Use mongoose.Types.ObjectId to convert address_id
+        const addresses = await Address.find().where({_id:aaddress});
+
+        // console.log(addresses);
+       
+        if (addresses) {
+            res.send({ message: "All address listed", adres: addresses, status: "success" });
+        } else {
+            res.status(404).send({ message: "Address not found", status: "error" });
+        }
+    
+    } catch (error) { 
+        console.log(error);
+        res.status(500).send({ message: "Something went wrong", status: "error" });
+    }
+};
+// place order
+export const addOrderDetail = async (req, res) => {
+    try {
+      const { coupon, amount, amount_with_tax, address, product, payment_status, status } = req.body;
+      const user_data = req.user;
+
+      // Log the products for debugging
+      console.log("products", product);
+
+      // Build the order detail object
+      const orderDetailData = {
+        user: user_data, // Ensure user is ObjectId
+        amount: amount,
+        amount_with_tax: amount_with_tax,
+        product: product,
+        address: address, // Ensure address is ObjectId
+        payment_status: payment_status,
+        status: status,
+      };
+
+      // Only add coupon if it's provided
+      if (coupon) {
+        orderDetailData.coupon = coupon;
+      }
+
+      // Create the order detail
+      const newOrderDetail = await OrderDetail.create(orderDetailData);
+
+      if (newOrderDetail) {
+        console.log(newOrderDetail);
+        res.send({ message: "Details Added Successfully", status: "success", order_detail: newOrderDetail });
+      } else {
+        res.send({ message: "Unable to add the Details", status: "error" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.send({ message: "Something went wrong", status: "error" });
+    }
+  };
+
+  export const viewParticularOrder = async (req, res) => {
+    try {
+        const order_id = req.params.id;
+        console.log(order_id);
+
+        if (!order_id) {
+            return res.status(400).send({ message: "Unable to get order id", status: "error" });
+        }
+
+        const orders = await OrderDetail.findOne({ _id: order_id })
+            .populate('user')
+            .populate('address')
+            .populate('product');
+
+        if (orders && orders.coupon) {
+            await orders.populate('coupon');
+        }
+
+        if (orders) {
+            if (!orders.coupon) {
+                orders.coupon ="Coupon unavailable" ; 
+            }
+            res.send({ message: "Order details retrieved successfully", order_data: orders, status: "success" });
+        } else {
+            res.status(404).send({ message: "Order not found", status: "error" });
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Something went wrong", status: "error" });
+    }
+}
+
+export const updateOrderStatus = async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    const user_data = req.user;
+  
+    console.log("Details");
+    console.log(id);
+    console.log(status);
+  
+    try {
+      // Update the order status in your database
+      const updatedOrder = await OrderDetail.findByIdAndUpdate(
+        id,
+        { payment_status: status || 'paid' },  // Update the payment_status field
+        { new: true }  // Return the updated document
+      );
+  
+      if (!updatedOrder) {
+        return res.status(404).json({ message: 'Order not found' })
+      }
+  
+      // Delete all cart records for the user
+      await Cart.deleteMany({ user: user_data._id });
+  
+      console.log(updatedOrder);
+  
+      res.status(200).json({ message: 'Order status updated successfully', order: updatedOrder, status: "Success" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  export const viewAllOrders = async (req,res)=>{
+    try {
+        const user_data = req.user;
+        const Orders = await OrderDetail.find({user:user_data._id}).populate("product");
+
+        
+        if(Orders){
+            console.log(Orders);
+            res.send({ message: "All orders listed",orders_list:Orders,status: "success" });
+    
+        }else{
+            
+            res.send({ message: "Unable to get orders",status: "error"});
+        }
+    
+    
+    } catch (error) { 
+        console.log(error);
+        res.send({ message: "something went wrong"});
+        
+    }
+}
   
 
-  

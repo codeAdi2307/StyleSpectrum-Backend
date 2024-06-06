@@ -21,11 +21,11 @@ const orderDetailSchema = new Schema({
   amount_with_tax:{
     type: Number,
   },
-  product:{
+  product:[{
     type: Schema.Types.ObjectId,
     ref: 'Product',
     required: true
-  },
+  }],
   address:{
     type: Schema.Types.ObjectId,
     ref: 'Address',
