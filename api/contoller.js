@@ -260,7 +260,7 @@ export const userSignIn = async (req,res,next)=>{
 
             res.send({ message: `Welcome ${user.fullname}`,token: token,status: "success"});
         }else{
-            res.send({ message: "No User Registred",status: "error"});   
+            res.send({ message: "Not Registered or Wrong Password",status: "error"});   
     }
     }else{
         res.send({ message: "Enter in data in right format",status: "error"});
