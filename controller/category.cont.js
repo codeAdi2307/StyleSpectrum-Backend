@@ -32,7 +32,8 @@ if(categorySchema.success){
     
     const newCategory = await Category.create({
         name:name,
-        status:status
+        status:status,
+        imageUrl:imageUrl
     })
    
     if(newCategory){
@@ -145,7 +146,7 @@ export const updateCategory = async (req,res)=>{
                 return res.status(400).send({ message: "Unable to get Category id", status: "error" });
               
               }
-        const {name,status} = req.body;
+        const {name,status,imageUrl} = req.body;
         
     const mySchema = z.object({
         name: z.string(),  
@@ -163,7 +164,8 @@ export const updateCategory = async (req,res)=>{
         
         const updateCat = await Category.findByIdAndUpdate(cat_id,{
             name:name,
-            status:status
+            status:status,
+            imageUrl:imageUrl
         },{ new: true, runValidators: true })
        
         if(updateCat){

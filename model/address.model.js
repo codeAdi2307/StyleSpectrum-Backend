@@ -33,6 +33,10 @@ const addressSchema = new Schema({
         type: String,
         required: true
       },
+      status: {
+        type: String,
+        required: true
+      },
 
       phonenumber:{
         type:Number,

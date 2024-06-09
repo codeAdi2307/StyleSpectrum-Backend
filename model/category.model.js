@@ -10,7 +10,11 @@ const categorySchema = new Schema({
     status:{
         type:String,
         required: true,
-    }
+    },
+    imageUrl: {
+      type: String,
+      required: true,
+    },
   }, { timestamps: true });
   
 

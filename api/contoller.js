@@ -11,7 +11,8 @@ import Cart from "../model/cart.model.js";
 import Coupon from "../model/coupon.model.js";
 import Address from "../model/address.model.js";
 import OrderDetail from "../model/order.details.model.js";
-import { STATUS_ACTIVE,ROLE_USER,ROLE_ADMIN,PENDING } from "../constants/constants.js";
+import Wishlist from "../model/wishlist.model.js";
+import { STATUS_ACTIVE,ROLE_USER,ROLE_ADMIN,PENDING,STATUS_INACTIVE } from "../constants/constants.js";
 
 
 Dotenv.config();
@@ -359,6 +360,7 @@ export const viewAllCoupon = async (req, res) => {
 
 }
 
+
 // add address
 export const addAddress = async (req, res, next) => {
     try {
@@ -386,6 +388,7 @@ export const addAddress = async (req, res, next) => {
         postalCode: postalCode,
         country: country,
         phonenumber: phonenumber,
+        
       });
 
       console.log("hdahdasd");
@@ -405,7 +408,8 @@ export const addAddress = async (req, res, next) => {
         postalCode: postalCode,
         country: country,
         phonenumber: phonenumber,
-        user: user_data
+        user: user_data,
+        status: STATUS_ACTIVE
       });
   
       console.log("ashdahd");
@@ -424,6 +428,79 @@ export const addAddress = async (req, res, next) => {
     }
   };
 
+
+//  update address
+export const updateAddress = async (req, res, next) => {
+    try {
+
+        const { id } = req.params;
+        if(!id){
+                res.send({message:"Unable to get address id",status:error});
+              }
+      console.log("adasd");
+      const { type, name, street, city, state, postalCode, country, phonenumber } = req.body;
+      const user_data = req.user;
+  
+    //   const mySchema = z.object({
+    //     type: z.string(),
+    //     name: z.string(),
+    //     street: z.string(),
+    //     city: z.string(),
+    //     state: z.string(), 
+    //     postalCode: z.string(), 
+    //     phonenumber: z.string(), 
+    //     country: z.string(),
+    //   }).strict();
+  
+    //   const validationResult = mySchema.safeParse({
+    //     type: type,
+    //     name: name,
+    //     street: street,
+    //     city: city,
+    //     state: state,
+    //     postalCode: postalCode,
+    //     country: country,
+    //     phonenumber: phonenumber,
+        
+    //   });
+
+    //   console.log("hdahdasd");
+    //   console.log(validationResult);
+  
+    //   if (!validationResult.success) {
+    //     const errors = validationResult.error.errors.map(err => err.message);
+    //     return res.status(400).json({ message: "Validation failed", errors: errors });
+    //   }
+  
+      const newAddress = await Address.findByIdAndUpdate({_id:id},{
+        type: type,
+        name: name,
+        street: street,
+        city: city,
+        state: state,
+        postalCode: postalCode,
+        country: country,
+        phonenumber: phonenumber,
+        user: user_data,
+        status: STATUS_ACTIVE
+      });
+  
+      console.log("ashdahd");
+      console.log(newAddress);
+  
+      if (newAddress) {
+        console.log("ajsdadddddddd");
+        console.log(newAddress);
+        res.status(201).json({ message: "Address Updated Successfully", status: "success", address: newAddress });
+      } else {
+        res.status(500).json({ message: "Unable to update the address", status: "error" });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ message: "Something went wrong", status: "error" });
+    }
+  };
+
 //view all address
 export const viewAllAddress= async (req,res)=>{
     try {
@@ -432,7 +509,7 @@ export const viewAllAddress= async (req,res)=>{
         console.log("aduhasjdhja");
         console.log(user_data._id);
 
-        const addresses = await Address.find().where({user : user_data._id}).populate('user');
+        const addresses = await Address.find().where({user : user_data._id,status:STATUS_ACTIVE}).populate('user');
         
 
         if(addresses){
@@ -455,17 +532,13 @@ export const viewAllAddress= async (req,res)=>{
 export const viewParticularAddress = async (req, res) => {
     try {
         const { aaddress } = req.body;
-        // console.log(req.body);
-        // console.log(aaddress);
     
         if (!aaddress) {
             return res.status(400).send({ message: "Unable to get address id", status: "error" });
         }
 
-        // Use mongoose.Types.ObjectId to convert address_id
         const addresses = await Address.find().where({_id:aaddress});
 
-        // console.log(addresses);
        
         if (addresses) {
             res.send({ message: "All address listed", adres: addresses, status: "success" });
@@ -478,32 +551,55 @@ export const viewParticularAddress = async (req, res) => {
         res.status(500).send({ message: "Something went wrong", status: "error" });
     }
 };
+ export const deleteAddress = async (req,res)=>{
+    try {
+
+        const { id } = req.params;
+        if(!id){
+                res.send({message:"Unable to get address id",status:error});
+              }
+        const addresses = await Address.findByIdAndUpdate({
+            _id:id
+        },{status:STATUS_INACTIVE})
+       
+        if(addresses){
+           
+            res.send({ message: "Address has been deleted",status: "success" });
+    
+        }else{
+            
+            res.send({ message: "Unable to delete address",status: "error"});
+        }
+    
+    
+    } catch (error) { 
+        console.log(error);
+        res.send({ message: "something went wrong"});
+        
+    }
+}
 // place order
 export const addOrderDetail = async (req, res) => {
     try {
       const { coupon, amount, amount_with_tax, address, product, payment_status, status } = req.body;
       const user_data = req.user;
 
-      // Log the products for debugging
       console.log("products", product);
 
-      // Build the order detail object
       const orderDetailData = {
-        user: user_data, // Ensure user is ObjectId
+        user: user_data, 
         amount: amount,
         amount_with_tax: amount_with_tax,
         product: product,
-        address: address, // Ensure address is ObjectId
+        address: address, 
         payment_status: payment_status,
         status: status,
       };
 
-      // Only add coupon if it's provided
       if (coupon) {
         orderDetailData.coupon = coupon;
       }
 
-      // Create the order detail
       const newOrderDetail = await OrderDetail.create(orderDetailData);
 
       if (newOrderDetail) {
@@ -561,18 +657,16 @@ export const updateOrderStatus = async (req, res) => {
     console.log(status);
   
     try {
-      // Update the order status in your database
       const updatedOrder = await OrderDetail.findByIdAndUpdate(
         id,
-        { payment_status: status || 'paid' },  // Update the payment_status field
-        { new: true }  // Return the updated document
+        { payment_status: status || 'paid' },  
+        { new: true }  
       );
   
       if (!updatedOrder) {
         return res.status(404).json({ message: 'Order not found' })
       }
   
-      // Delete all cart records for the user
       await Cart.deleteMany({ user: user_data._id });
   
       console.log(updatedOrder);
@@ -583,19 +677,99 @@ export const updateOrderStatus = async (req, res) => {
     }
   };
 
-  export const viewAllOrders = async (req,res)=>{
+
+export const viewAllOrders = async (req, res) => {
+  try {
+    const user_data = req.user;
+    const { status, time, payment_status } = req.query;
+
+    let filters = { user: user_data._id };
+
+    if (status) {
+      filters.status = status;
+    }
+
+    if (payment_status) {
+      filters.payment_status = payment_status;
+    }
+
+    if (time) {
+      let date = new Date();
+      if (time === 'Last 30 days') {
+        date.setDate(date.getDate() - 30);
+      } else if (!isNaN(time)) {
+        date = new Date(time, 0, 1);
+      } else if (time === 'Older') {
+        date = new Date('2000-01-01');
+      }
+      filters.createdAt = { $gte: date };
+    }
+
+    const Orders = await OrderDetail.find(filters)
+                                   .populate("product")
+                                   .sort({ createdAt: -1 }); // Sort by createdAt in descending order
+
+    if (Orders) {
+      console.log(Orders);
+      res.send({ message: "All orders listed", orders_list: Orders, status: "success" });
+    } else {
+      res.send({ message: "Unable to get orders", status: "error" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.send({ message: "something went wrong" });
+  }
+}
+
+
+
+export const addWishlist = async (req, res) => {
+    try {
+      const { product } = req.body;
+      const user_data = req.user; 
+  
+      let existingWishlistItem = await Wishlist.findOne({ user: user_data, product });
+  
+      if (existingWishlistItem) {
+        await Wishlist.findByIdAndDelete(existingWishlistItem._id);
+        res.send({ message: "Product removed from Wishlist", status: "success" });
+      } else {
+        const wishlistData = {
+          user: user_data,
+          product: product,
+        };
+  
+        const newWishDetail = await Wishlist.create(wishlistData);
+  
+        if (newWishDetail) {
+          res.send({ message: "Product Added To Wishlist", status: "success", wishlist: newWishDetail });
+        } else {
+          res.send({ message: "Unable to add to Wishlist", status: "error" });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      res.send({ message: "Something went wrong", status: "error" });
+    }
+  };
+
+export const viewAllWishList= async (req,res)=>{
     try {
         const user_data = req.user;
-        const Orders = await OrderDetail.find({user:user_data._id}).populate("product");
 
+        console.log("aduhasjdhja");
+        console.log(user_data._id);
+
+        const wishlist = await Wishlist.find().where({user : user_data._id}).populate('product');
         
-        if(Orders){
-            console.log(Orders);
-            res.send({ message: "All orders listed",orders_list:Orders,status: "success" });
+
+        if(wishlist){
+            console.log(wishlist);
+            res.send({ message: "All wishlist listed",wishlists:wishlist,status: "success" });
     
         }else{
             
-            res.send({ message: "Unable to get orders",status: "error"});
+            res.send({ message: "Unable to get wishlist",status: "error"});
         }
     
     
@@ -605,5 +779,10 @@ export const updateOrderStatus = async (req, res) => {
         
     }
 }
+
+
+
+
+
   
 
