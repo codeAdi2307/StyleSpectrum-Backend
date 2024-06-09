@@ -40,22 +40,21 @@ app.use("/api",apiRouter)
 app.use(cashfreeRouter)
 app.use(razorpayRouter)
 
-function connection() {
+async function connection() {
   try {
-    const connectDb = async function () {
-      // const connect = await mongoose.connect("mongodb://127.0.0.1:27017/ecommerce");
-      const connect = await mongoose.connect(process.env.MONGO_URL);
-      if (connect) {
-        app.listen(process.env.PORT || 8001, () => {
-          console.log("Listening to server and connected to db");
-        });
-      } else {
-        throw new Error("Not connected to Db");
-      }
-    };
-    connectDb();
+          // const connect = await mongoose.connect("mongodb://127.0.0.1:27017/ecommerce");
+
+    const connect = await mongoose.connect(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log('Connected to MongoDB');
+    app.listen(process.env.PORT || 8001, () => {
+      console.log("Listening to server and connected to db");
+    });
   } catch (error) {
-    console.error("Problem with the code running:", error.message);
+    console.error("Problem with the code running:", error);
+    process.exit(1); // Exit the process with failure
   }
 }
 
