@@ -43,9 +43,10 @@ app.use(razorpayRouter)
 function connection() {
   try {
     const connectDb = async function () {
-      const connect = await mongoose.connect("mongodb://127.0.0.1:27017/ecommerce");
+      // const connect = await mongoose.connect("mongodb://127.0.0.1:27017/ecommerce");
+      const connect = await mongoose.connect(process.env.MONGO_URL);
       if (connect) {
-        app.listen(process.env.PORT || 3001, () => {
+        app.listen(process.env.PORT || 8001, () => {
           console.log("Listening to server and connected to db");
         });
       } else {
