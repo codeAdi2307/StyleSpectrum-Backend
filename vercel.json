@@ -2,9 +2,6 @@
     "version": 2,
     "name": "style-spectrum",
     "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "/index.js"
-      }
+      { "src": "/api/(.*)", "dest": "/api/index.js" }
     ]
   }

@@ -21,16 +21,16 @@ app.use(express.json());
 app.use(cors());
 
 // For Admin Panel
-app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/user", userRouter);
-app.use("/api/v1/prod", productRouter);
-app.use("/api/v1/cat", categoryRouter);
-app.use("/api/v1/bann", bannerRouter);
-app.use("/api/v1/brand", brandRouter);
-app.use("/api/v1/cpn", couponRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/user", userRouter);
+app.use("/api/prod", productRouter);
+app.use("/api/cat", categoryRouter);
+app.use("/api/bann", bannerRouter);
+app.use("/api/brand", brandRouter);
+app.use("/api/cpn", couponRouter);
 
 // For Web API
-app.use(apiRouter);
+app.use("/api/v1",apiRouter);
 
 // For payment gateways
 app.use(cashfreeRouter);
