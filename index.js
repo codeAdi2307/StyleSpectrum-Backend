@@ -63,4 +63,4 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something went wrong in some controller");
 });
 
-export default app; // Ensure you export the app for serverless functions
+// export default app; 
