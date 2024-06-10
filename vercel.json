@@ -1,7 +1,15 @@
 {
-    "version": 2,
-    "name": "style-spectrum",
-    "routes": [
-      { "src": "/api/(.*)", "dest": "/api/index.js" }
-    ]
+  "version": 2,
+  "functions": {
+    "api/index.js": {
+      "runtime": "nodejs16.x"
+    }
+  },
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.js" }
+  ],
+  "env": {
+    "MONGO_URL": "@mongo_url",
+    "PORT": "@port"
   }
+}
