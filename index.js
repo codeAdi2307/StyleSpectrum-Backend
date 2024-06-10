@@ -38,11 +38,15 @@ app.use(razorpayRouter);
 
 async function connection() {
   try {
-    await mongoose.connect(process.env.MONGO_URL, {
+
+  let mongo_url =  process.env.MONGO_URL
+
+    await mongoose.connect(mongo_url, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
     console.log("Connected to MongoDB");
+    console.log(process.env.PORT);
     app.listen(process.env.PORT || 8001, () => {
       console.log("Listening to server and connected to db");
     });
