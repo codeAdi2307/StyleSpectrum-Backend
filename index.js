@@ -30,7 +30,7 @@ app.use("/api/v1/brand", brandRouter);
 app.use("/api/v1/cpn", couponRouter);
 
 // For Web API
-app.use("/api", apiRouter);
+app.use("/api/v1", apiRouter);
 
 // For payment gateways
 app.use(cashfreeRouter);
