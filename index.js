@@ -16,9 +16,9 @@ import apiRouter from "./api/router.js";
 import dotenv from "dotenv";
 import cors from "cors";
 
-const app = express();
 dotenv.config();
 
+const app = express();
 app.use(express.json());
 app.use(cors());
 
@@ -31,16 +31,16 @@ app.use("/api/bann", bannerRouter);
 app.use("/api/brand", brandRouter);
 app.use("/api/cpn", couponRouter);
 
-// For Web Api
+// For Web API
 app.use("/api", apiRouter);
 
-// for payment gateway
+// For payment gateways
 app.use(cashfreeRouter);
 app.use(razorpayRouter);
 
 async function connection() {
   try {
-    const connect = await mongoose.connect(process.env.MONGO_URL, {
+    await mongoose.connect(process.env.MONGO_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
@@ -60,3 +60,5 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).send("Something went wrong in some controller");
 });
+
+export default app; // Ensure you export the app for serverless functions
