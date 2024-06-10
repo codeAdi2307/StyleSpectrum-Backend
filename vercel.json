@@ -2,10 +2,14 @@
   "version": 2,
   "functions": {
     "api/index.js": {
-      "runtime": "nodejs16.x"
+      "runtime": "nodejs"
     }
   },
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/index.js" }
-  ]
+  ],
+  "env": {
+    "MONGO_URL": "@mongo_url",
+    "PORT": "@port"
+  }
 }
