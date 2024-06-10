@@ -1,5 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
 
 import adminRouter from "./routes/admin.route.js";
 import userRouter from "./routes/user.route.js";
@@ -10,11 +12,7 @@ import brandRouter from "./routes/brand.router.js";
 import couponRouter from "./routes/coupon.route.js";
 import cashfreeRouter from "./routes/cashfree.route.js";
 import razorpayRouter from "./routes/razorpay.route.js";
-
 import apiRouter from "./api/router.js";
-
-import dotenv from "dotenv";
-import cors from "cors";
 
 dotenv.config();
 
