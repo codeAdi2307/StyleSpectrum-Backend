@@ -2,10 +2,7 @@
   "version": 2,
 
   "routes": [
-    { "src": "/api/(.*)", "dest": "index.js" }
-  ],
-  "env": {
-    "MONGO_URL": "@mongo_url",
-    "PORT": "@port"
-  }
+    { "src": "/(.*)", "dest": "/" }
+  ]
+
 }
