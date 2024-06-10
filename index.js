@@ -1,4 +1,4 @@
-import Express from "express";
+import express from "express";
 import mongoose from "mongoose";
 
 import adminRouter from "./routes/admin.route.js";
@@ -11,44 +11,40 @@ import couponRouter from "./routes/coupon.route.js";
 import cashfreeRouter from "./routes/cashfree.route.js";
 import razorpayRouter from "./routes/razorpay.route.js";
 
-
 import apiRouter from "./api/router.js";
 
-
-import Dotenv  from "dotenv";
+import dotenv from "dotenv";
 import cors from "cors";
 
-const app = Express();
-Dotenv.config();
+const app = express();
+dotenv.config();
 
-app.use(Express.json())
-app.use(cors())
+app.use(express.json());
+app.use(cors());
 
 // For Admin Panel
-app.use("/api/admin",adminRouter)
-app.use("/api/user",userRouter)
-app.use("/api/prod",productRouter)
-app.use("/api/cat",categoryRouter)
-app.use("/api/bann",bannerRouter)
-app.use("/api/brand",brandRouter)
-app.use("/api/cpn",couponRouter)
+app.use("/api/admin", adminRouter);
+app.use("/api/user", userRouter);
+app.use("/api/prod", productRouter);
+app.use("/api/cat", categoryRouter);
+app.use("/api/bann", bannerRouter);
+app.use("/api/brand", brandRouter);
+app.use("/api/cpn", couponRouter);
 
 // For Web Api
-app.use("/api",apiRouter)
+app.use("/api", apiRouter);
 
 // for payment gateway
-app.use(cashfreeRouter)
-app.use(razorpayRouter)
+app.use(cashfreeRouter);
+app.use(razorpayRouter);
 
 async function connection() {
   try {
-          // const connect = await mongoose.connect("mongodb://127.0.0.1:27017/ecommerce");
-
     const connect = await mongoose.connect(process.env.MONGO_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
-    console.log('Connected to MongoDB');
+    console.log("Connected to MongoDB");
     app.listen(process.env.PORT || 8001, () => {
       console.log("Listening to server and connected to db");
     });
@@ -60,7 +56,7 @@ async function connection() {
 
 connection();
 
-app.use((err,req,res,next)=>{
-  console.log(err);
-  res.send("Something wrong in some controller")
-})
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).send("Something went wrong in some controller");
+});
