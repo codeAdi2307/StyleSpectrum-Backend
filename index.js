@@ -41,14 +41,12 @@ async function connection() {
 
   let mongo_url =  process.env.MONGO_URL
 
-    await mongoose.connect(mongo_url, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
+    // await mongoose.connect("mongodb://127.0.0.1:27017/ecommerce");
+    await mongoose.connect(mongo_url);
     console.log("Connected to MongoDB");
     console.log(process.env.PORT);
     app.listen(process.env.PORT || 8001, () => {
-      console.log("Listening to server and connected to db");
+      console.log(`Listening to server and connected to db  at ${process.env.PORT}`);
     });
   } catch (error) {
     console.error("Problem with the code running:", error);

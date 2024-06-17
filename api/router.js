@@ -1,6 +1,6 @@
 import Express  from "express";
 
-import { viewAllProduct,viewAllCategory,filterCategoryWise,viewParticularProduct,viewAllBanner,userSignUp,userSignIn,cartDetails,viewAllCoupon,viewAllBrand,addAddress,viewAllAddress,addOrderDetail,viewParticularAddress,viewParticularOrder,updateOrderStatus,viewAllOrders,addWishlist,viewAllWishList,deleteAddress,updateAddress} from "./contoller.js";
+import { viewAllProduct,viewAllCategory,filterCategoryWise,viewParticularProduct,viewAllBanner,userSignUp,userSignIn,cartDetails,viewAllCoupon,viewAllBrand,addAddress,viewAllAddress,addOrderDetail,viewParticularAddress,viewParticularOrder,updateOrderStatus,viewAllOrders,addWishlist,viewAllWishList,deleteAddress,updateAddress,searchProducts} from "./contoller.js";
 import { adminJwtVerify } from "../middleware/jwtverify.middleware.js";
 
 
@@ -11,6 +11,7 @@ apiRouter.get("/prod",viewAllProduct)
 apiRouter.get("/detail",viewParticularProduct)
 apiRouter.get("/cat",viewAllCategory)
 apiRouter.get("/category",filterCategoryWise)
+apiRouter.get("/search",searchProducts)
 apiRouter.get("/banners",viewAllBanner)
 apiRouter.post("/signup",userSignUp)
 apiRouter.post("/signin",userSignIn)

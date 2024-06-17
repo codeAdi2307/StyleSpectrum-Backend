@@ -158,6 +158,64 @@ export const filterCategoryWise = async (req,res)=>{
     }
 }
 
+// search product
+export const searchProducts = async (req, res) => {
+  try {
+    let categoryId = req.query.id;
+    let searchTerm = req.query.text;
+
+    console.log(categoryId);
+    console.log(searchTerm);
+
+    let products = [];
+
+    if (categoryId && searchTerm) {
+      let products_list = await Product.find({ category: categoryId }).populate("category");
+
+      let text = searchTerm.toLowerCase().split(' ').join('');
+
+      let filtered_data = products_list.filter((item) => {
+        let productName = item.name.toLowerCase().split(' ').join('');
+        console.log(productName);
+
+        return productName.includes(text);
+      });
+
+      products = filtered_data;  
+
+    } else if (categoryId && !searchTerm) {
+      let products_list = await Product.find({ category: categoryId }).populate("category");
+      products = products_list;  
+
+    } else if (!categoryId && searchTerm) {
+      let text = searchTerm.toLowerCase().split(' ').join('');
+
+      let all_prod = await Product.find();
+
+      let filtered_data = all_prod.filter((item) => {
+        let productName = item.name.toLowerCase().split(' ').join('');
+        console.log(productName);
+
+        return productName.includes(text);
+      });
+
+      products = filtered_data;  
+    }
+    
+
+    if (products.length) {
+      res.send({ message: "All Products listed", prod: products, status: "success" });
+    } else {
+      res.send({ message: "Unable to get Products", status: "error" });
+    }
+
+  } catch (error) {
+    console.log(error);
+    res.send({ message: "something went wrong" });
+  }
+}
+
+
 // for banners
 export const viewAllBanner = async (req,res)=>{
     try {
@@ -760,7 +818,7 @@ export const viewAllWishList= async (req,res)=>{
         console.log("aduhasjdhja");
         console.log(user_data._id);
 
-        const wishlist = await Wishlist.find().where({user : user_data._id}).populate('product');
+        const wishlist = await Wishlist.find().where({user : user_data._id}).populate('product')
         
 
         if(wishlist){
